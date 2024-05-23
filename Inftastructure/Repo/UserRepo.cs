@@ -45,6 +45,7 @@ namespace Infrastructure.Repo
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Name!),
                 new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.Role, user.Role!),
 
             };
             var token = new JwtSecurityToken(
@@ -58,7 +59,7 @@ namespace Infrastructure.Repo
         }
 
         private async Task<ApplicationUser>FindUserByEmail(string email) =>
-             await appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            await appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
 
         public async Task<RegistrationResponse> RegisterUserAsync(RegisterUserDTO registerUserDTO)
         {
@@ -70,7 +71,8 @@ namespace Infrastructure.Repo
             {
                 Name = registerUserDTO.Name,
                 Email = registerUserDTO.Email,
-                Password =BCrypt.Net.BCrypt.HashPassword (registerUserDTO.Password)
+                Password =BCrypt.Net.BCrypt.HashPassword (registerUserDTO.Password),
+                Role = registerUserDTO.Role
             });
             await appDbContext.SaveChangesAsync();
             return new RegistrationResponse(true,"Registration completed");
